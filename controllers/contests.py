@@ -5,7 +5,8 @@ from flask import g, request
 
 from app import app
 from decorators import use_sql_session, authentication_required
-from orm import Contest
+from orm import Contest, ContestMember
+from .constants import ROLES, ROLES_INVERTED
 
 
 def format_date(d):
@@ -17,7 +18,13 @@ def contest2json(contest):
         'id': contest.id,
         'name': contest.name,
         'start_date': format_date(contest.start_date),
-        'end_date': format_date(contest.finish_date)
+        'end_date': format_date(contest.finish_date),
+        'members': [
+            {
+                'user_id': m.user_id,
+                'role': ROLES_INVERTED[m.role]
+            } for m in contest.members
+        ]
     }
 
 
@@ -54,3 +61,26 @@ def create_contest():
     g.session.flush()
 
     return contest2json(contest)
+
+
+@app.route("/contests/<id>/members/", methods=['PUT'])
+@use_sql_session
+@authentication_required
+def update_contest_members(id):
+    for member in request.json.get('add', []):
+        g.session.add(ContestMember(
+            user_id=member['user_id'],
+            contest_id=id,
+            role=ROLES[member['role']]
+        ))
+
+    for member in request.json.get('remove', []):
+        g.session.query(ContestMember).filter(
+            ContestMember.contest_id == id and
+            ContestMember.user_id == member['user_id'] and
+            ContestMember.role == member['role']
+        ).delete()
+
+    return contest2json(
+        g.session.query(Contest).filter(Contest.id == id).one()
+    )

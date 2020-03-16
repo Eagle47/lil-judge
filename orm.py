@@ -1,7 +1,6 @@
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Boolean, Integer, String, UniqueConstraint, ForeignKey, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-
 
 Base = declarative_base()
 
@@ -29,6 +28,8 @@ class Contest(Base):
     name = Column(String)
     start_date = Column(DateTime(timezone=True))
     finish_date = Column(DateTime(timezone=True))
+
+    members = relationship('ContestMember')
 
 
 class ContestMember(Base):
