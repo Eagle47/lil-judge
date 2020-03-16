@@ -27,8 +27,8 @@ class Contest(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    start_date = Column(DateTime)
-    finish_date = Column(DateTime)
+    start_date = Column(DateTime(timezone=True))
+    finish_date = Column(DateTime(timezone=True))
 
 
 class ContestMember(Base):
