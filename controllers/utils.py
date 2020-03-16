@@ -6,29 +6,36 @@ import random
 import hashlib
 
 
-def create_user(username, password, first_name, last_name):
+def create_user(username, password, first_name, last_name, is_admin=False, session=None):
     salt = ''.join(random.sample(string.printable, 20))
     hash = hashlib.sha512()
     hash.update((password + salt).encode())
     salted_password = hash.hexdigest()
 
-    session = get_session()
+    s = session or get_session()
 
-    session.add(User(
+    new_user = User(
         username=username,
-        firstname=first_name,
-        lastname=last_name,
+        first_name=first_name,
+        last_name=last_name,
         password=salted_password,
-        salt=salt
-    ))
+        salt=salt,
+        is_admin=is_admin
+    )
+    s.add(new_user)
 
-    session.commit()
+    s.flush()
+
+    if session is None:
+        s.commit()
+
+    return new_user
 
 
-def get_user(username, password):
-    session = get_session()
+def get_user(username, password, session=None):
+    s = session or get_session()
 
-    user = session.query(User).filter(User.username == username).one_or_none()
+    user = s.query(User).filter(User.username == username).one_or_none()
 
     if user is None:
         return None

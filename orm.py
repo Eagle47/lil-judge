@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, UniqueConstraint, ForeignKey
+from sqlalchemy import Column, Boolean, Integer, String, UniqueConstraint, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 
 
@@ -11,27 +11,41 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     username = Column(String)
-    firstname = Column(String)
-    lastname = Column(String)
+    first_name = Column(String)
+    last_name = Column(String)
     password = Column(String)
     salt = Column(String)
+    is_admin = Column(Boolean, default=False)
 
     __table_args__ = (
         UniqueConstraint('username'),
     )
 
-    def __repr__(self):
-        return 'User('\
-            f'username={self.username}, ' \
-            f'firstname={self.firstname}, ' \
-            f'lastname={self.lastname}' \
-            ')'
+
+class Contest(Base):
+    __tablename__ = 'contests'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    start_date = Column(DateTime)
+    finish_date = Column(DateTime)
+
+
+class ContestMember(Base):
+    __tablename__ = 'contest_membership'
+
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    contest_id = Column(Integer, ForeignKey('contests.id'), primary_key=True)
+    role = Column(Integer, primary_key=True)
+
+    user = relationship("User")
+    contest = relationship("Contest")
 
 
 class Token(Base):
     __tablename__ = 'tokens'
 
     id = Column(String, primary_key=True)
-    userid = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
 
     user = relationship("User")

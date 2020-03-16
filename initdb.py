@@ -1,6 +1,6 @@
 from dbconfig import get_engine
 from orm import Base
-from utils import create_user
+from controllers.utils import create_user
 
 engine = get_engine()
 
