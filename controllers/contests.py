@@ -1,10 +1,11 @@
+from datetime import timezone
+
+import dateutil.parser
+from flask import g, request
+
 from app import app
 from decorators import use_sql_session, authentication_required
 from orm import Contest
-from flask import g, request
-import dateutil.parser
-
-from datetime import timezone
 
 
 def format_date(d):
@@ -27,6 +28,15 @@ def list_contests():
     return {
         'contests': [contest2json(contest) for contest in g.session.query(Contest)]
     }
+
+
+@app.route("/contests/<id>/")
+@use_sql_session
+@authentication_required
+def get_contest(id):
+    return contest2json(
+        g.session.query(Contest).filter(Contest.id == id).one()
+    )
 
 
 @app.route("/contests/", methods=['POST'])
