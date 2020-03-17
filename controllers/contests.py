@@ -18,7 +18,7 @@ def contest2json(contest):
         'id': contest.id,
         'name': contest.name,
         'start_date': format_date(contest.start_date),
-        'end_date': format_date(contest.finish_date),
+        'finish_date': format_date(contest.finish_date),
         'members': [
             {
                 'user_id': m.user_id,
