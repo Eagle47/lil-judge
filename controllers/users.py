@@ -1,8 +1,8 @@
-from decorators import authentication_required, use_sql_session
-from app import app
-from orm import User, ContestMember, Token
-from flask import g, request
+from flask import g, request, abort
 
+from app import app
+from decorators import authentication_required, use_sql_session
+from orm import User, ContestMember, Token
 from . import utils
 
 
@@ -20,6 +20,9 @@ def user2json(u):
 @use_sql_session
 @authentication_required
 def list_users():
+    if not g.user.is_admin:
+        abort(403)
+
     return {
         'users': [user2json(user) for user in g.session.query(User)]
     }
