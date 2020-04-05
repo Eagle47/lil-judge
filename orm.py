@@ -55,8 +55,6 @@ class ContestProblem(Base):
     contest = relationship('Contest')
     problem = relationship('Problem')
 
-    #submissions = relationship('ProblemSubmission', foreign_keys=[contest_id, problem_id])
-
     __table_args__ = (
         UniqueConstraint('contest_id', 'problem_key'),
     )

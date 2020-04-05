@@ -5,7 +5,7 @@ config = {
     'user': 'postgres',
     'password': 'password',
     'host': 'localhost',
-    'port': 15432,
+    'port': 5432,
     'echo': True
 }
 
